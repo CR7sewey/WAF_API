@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: WAF
+  output:
+    ansi:
+      enabled: always
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: update # create-drop, none, create
+
+    properties:
+      hibernate:
+        format-sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+      show-sql: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url:
+    username:
+    password:
+
+server:
+  port: 8080
