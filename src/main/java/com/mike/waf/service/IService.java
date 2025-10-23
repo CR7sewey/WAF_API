@@ -11,5 +11,7 @@ public interface IService<T> {
     Optional<T> findById(UUID id);
     T save(Player player);
     Page<Player> findAllByNameAndRating(String name, Integer rating, Integer pageNumber, Integer pageSize);
+    void update(Player player);
+    void delete(Player player);
 
 }

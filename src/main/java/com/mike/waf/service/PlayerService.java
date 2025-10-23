@@ -3,6 +3,7 @@ package com.mike.waf.service;
 import com.mike.waf.model.entities.Player;
 import com.mike.waf.repository.PlayerRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,19 @@ public class PlayerService implements IService<Player> {
     @Override
     public Player save(Player player) {
         return playerRepository.save(player);
+    }
+
+    @Override
+    public void update(Player player) {
+        if (player.getId() == null) {
+            throw new IllegalArgumentException("Player not found");
+        }
+        playerRepository.save(player);
+    }
+
+    @Override
+    public void delete(Player player) {
+        playerRepository.delete(player);
     }
 
     @Override

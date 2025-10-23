@@ -37,7 +37,7 @@ public class ResourceExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Object> handleOperationNotAllowed(RuntimeException e, HttpServletRequest request){
+    public ResponseEntity<Object> handleOperationNotAllowed(BadRequestException e, HttpServletRequest request){
         ResponseErrorDTO errorDTO = new ResponseErrorDTO(
                 HttpStatus.BAD_REQUEST.value(),
                 e.getMessage(),

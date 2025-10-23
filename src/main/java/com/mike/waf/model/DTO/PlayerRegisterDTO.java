@@ -4,8 +4,10 @@ import com.mike.waf.model.enums.Positions;
 import jakarta.validation.constraints.*;
 
 import java.util.List;
+import java.util.UUID;
 
 public record PlayerRegisterDTO(
+        UUID playerId,
         @NotBlank(message = "Name is mandatory.")
         @Size(min = 1, max = 20)
         String name,

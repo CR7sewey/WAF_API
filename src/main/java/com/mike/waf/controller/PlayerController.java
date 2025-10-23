@@ -13,6 +13,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.math.BigInteger;
 import java.net.URI;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -56,6 +57,37 @@ public class PlayerController {
 
         Page<Player> players = playerService.findAllByNameAndRating(name, rating,  pageNumber, pageSize);
         return ResponseEntity.ok().body(players);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> update(@PathVariable String id, @RequestBody @Valid PlayerRegisterDTO playerRegisterDTO) {
+
+        UUID uuid = UUID.fromString(id);
+        Optional<Player> p = playerService.findById(uuid);
+        if (p.isPresent()) {
+            var player = p.get();
+            player.setName(playerRegisterDTO.name());
+            player.setAge(BigInteger.valueOf(playerRegisterDTO.age()));
+            player.setFavoritePosition(playerRegisterDTO.favoritePosition());
+            player.setFavoriteTeam(playerRegisterDTO.favoriteTeam());
+            player.setFavoritePlayer(playerRegisterDTO.favoritePlayer());
+            player.setSkill(playerRegisterDTO.skill());
+            playerService.update(player);
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.notFound().build();
+
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteById(@PathVariable String id) {
+
+        UUID uuid = UUID.fromString(id);
+        return playerService.findById(uuid).map(p -> {
+            playerService.delete(p);
+            return ResponseEntity.ok().build();
+        }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 }
