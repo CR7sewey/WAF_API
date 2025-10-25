@@ -43,7 +43,7 @@ public class PlayerService implements IService<Player> {
         playerRepository.delete(player);
     }
 
-    @Override
+    //@Override
     public Page<Player> findAllByNameAndRating(
             String name,
             Integer rating,
