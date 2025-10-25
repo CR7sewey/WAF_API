@@ -1,9 +1,12 @@
 package com.mike.waf.controller;
 
 import com.mike.waf.model.DTO.PlayerRegisterDTO;
+import com.mike.waf.model.DTO.PlayerStatisticsDTO;
 import com.mike.waf.model.entities.Player;
 import com.mike.waf.service.PlayerService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -89,5 +92,35 @@ public class PlayerController {
             return ResponseEntity.ok().build();
         }).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    //
+
+    @PutMapping("/{id}/statistics")
+    public ResponseEntity<Object> updateStatistics(@PathVariable String id, @RequestBody @Valid PlayerStatisticsDTO playerStatisticsDTO) {
+
+        UUID uuid = UUID.fromString(id);
+        Optional<Player> p = playerService.findById(uuid);
+        if (p.isPresent()) {
+            var player = p.get();
+            if (playerStatisticsDTO.gamesPlayed() != null) {
+                player.setGamesPlayed(BigInteger.valueOf(playerStatisticsDTO.gamesPlayed()));
+            }
+            if (playerStatisticsDTO.goals() != null) {
+                player.setGoals(BigInteger.valueOf(playerStatisticsDTO.goals()));
+            }
+            if (playerStatisticsDTO.assists() != null) {
+                player.setAssists(BigInteger.valueOf(playerStatisticsDTO.assists()));
+            }
+            if (playerStatisticsDTO.rating() != null) {
+                player.setRating(BigInteger.valueOf(playerStatisticsDTO.rating()));
+            }
+            playerService.update(player);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+
+    }
+
+
 
 }

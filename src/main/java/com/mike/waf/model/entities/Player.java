@@ -46,6 +46,9 @@ public class Player implements Serializable {
     private Positions mostPlayedPosition;
 
     @Column(nullable = true)
+    private BigInteger gamesPlayed;
+
+    @Column(nullable = true)
     private BigInteger goals;
 
     @Column(nullable = true)
