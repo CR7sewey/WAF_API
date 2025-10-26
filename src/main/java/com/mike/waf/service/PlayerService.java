@@ -1,7 +1,9 @@
 package com.mike.waf.service;
 
 import com.mike.waf.model.entities.Player;
+import com.mike.waf.model.entities.Team;
 import com.mike.waf.repository.PlayerRepository;
+import com.mike.waf.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
@@ -19,6 +21,7 @@ import java.util.UUID;
 public class PlayerService implements IService<Player> {
 
     private final PlayerRepository playerRepository;
+    private final TeamRepository teamRepository;
 
     @Override
     public Optional<Player> findById(UUID id) {
@@ -40,6 +43,8 @@ public class PlayerService implements IService<Player> {
 
     @Override
     public void delete(Player player) {
+        removePlayerFromTeams(player);
+
         playerRepository.delete(player);
     }
 
@@ -70,6 +75,14 @@ public class PlayerService implements IService<Player> {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("rating").descending());
         return playerRepository.findAll(sp, pageable);
+    }
+
+
+    private void removePlayerFromTeams(Player player) {
+        for (Team team : player.getTeams()) {
+            team.getPlayers().remove(player);
+        }
+        teamRepository.saveAll(player.getTeams());
     }
 
 }

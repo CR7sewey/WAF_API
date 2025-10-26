@@ -1,10 +1,13 @@
 package com.mike.waf.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -22,6 +25,11 @@ public class Team implements Serializable {
 
     @Column(name = "rating")
     private Integer rating;
+
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "tb_teams_players",  joinColumns = @JoinColumn(name = "team_id"), inverseJoinColumns = @JoinColumn(name = "player_id"))
+    private List<Player> players = new ArrayList<>();
 
     public Team() {}
 

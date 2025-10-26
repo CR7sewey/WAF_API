@@ -1,5 +1,6 @@
 package com.mike.waf.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mike.waf.model.enums.Positions;
 import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,6 +62,10 @@ public class Player implements Serializable {
     @Type(ListArrayType.class) // traduction from list to array
     @Column(name = "skill", columnDefinition = "varchar[]")
     private List<String> skill;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "players",fetch = FetchType.LAZY)
+    private List<Team> teams = new ArrayList<>();
 
     @CreatedDate
     @Column(name = "register_date")

@@ -1,5 +1,6 @@
 package com.mike.waf.controller;
 
+import com.mike.waf.exceptions.DuplicateRegister;
 import com.mike.waf.model.DTO.ResponseErrorDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
@@ -51,6 +52,18 @@ public class ResourceExceptionHandler {
     public ResponseEntity<Object> handleRunTimeException(RuntimeException e, HttpServletRequest request){
         ResponseErrorDTO errorDTO = new ResponseErrorDTO(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                e.getMessage(),
+                List.of()
+        );
+        return ResponseEntity.status(errorDTO.status()).body(errorDTO);
+    }
+
+    @ExceptionHandler(DuplicateRegister.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<Object> handleDuplicateRegister(DuplicateRegister e, HttpServletRequest request){
+        System.out.println("AQUUUUUUUUUUUUUUUUUUUUUi");
+        ResponseErrorDTO errorDTO = new ResponseErrorDTO(
+                HttpStatus.CONFLICT.value(),
                 e.getMessage(),
                 List.of()
         );

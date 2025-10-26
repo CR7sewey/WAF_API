@@ -1,5 +1,6 @@
 package com.mike.waf.controller;
 
+import com.mike.waf.exceptions.DuplicateRegister;
 import com.mike.waf.model.DTO.PlayerRegisterDTO;
 import com.mike.waf.model.DTO.PlayerStatisticsDTO;
 import com.mike.waf.model.DTO.TeamDTO;
@@ -81,5 +82,64 @@ public class TeamController {
         return ResponseEntity.ok().body(players);
     }
 
+    @PutMapping("/{id}/addPlayer")
+    public ResponseEntity<Object> addPlayers(@PathVariable String id, @RequestBody Player player) {
+
+        // team
+        UUID uuid = UUID.fromString(id);
+        Optional<Team> t = teamService.findById(uuid);
+
+        // player
+        UUID playerId = UUID.fromString(String.valueOf(player.getId()));
+        Optional<Player> p = playerService.findById(playerId);
+
+
+        if (t.isPresent() && p.isPresent()) {
+
+            var playerAlreadyAdded = t.get().getPlayers().stream().filter(p1 -> p1.getId().equals(playerId)).findFirst();
+            if (playerAlreadyAdded.isPresent()) {
+                throw new DuplicateRegister("Player already added");
+            }
+
+            var team = t.get();
+            var playerFound = p.get();
+            team.getPlayers().add(playerFound);
+            teamService.update(team);
+
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+
+    }
+
+    @PutMapping("/{id}/removePlayer")
+    public ResponseEntity<Object> removePlayers(@PathVariable String id, @RequestBody Player player) {
+
+        // team
+        UUID uuid = UUID.fromString(id);
+        Optional<Team> t = teamService.findById(uuid);
+
+        // player
+        UUID playerId = UUID.fromString(String.valueOf(player.getId()));
+        Optional<Player> p = playerService.findById(playerId);
+
+
+        if (t.isPresent() && p.isPresent()) {
+
+            var playerAlreadyAdded = t.get().getPlayers().stream().filter(p1 -> p1.getId().equals(playerId)).findFirst();
+            if (playerAlreadyAdded.isEmpty()) {
+                throw new DuplicateRegister("Player is not present");
+            }
+
+            var team = t.get();
+            var playerFound = p.get();
+            team.getPlayers().remove(playerFound);
+            teamService.update(team);
+
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+
+    }
 
 }
