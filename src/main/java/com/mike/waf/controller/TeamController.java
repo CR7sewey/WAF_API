@@ -34,6 +34,7 @@ public class TeamController {
     public ResponseEntity<Object> save(@RequestBody @Valid TeamDTO teamDTO) {
         var team = new Team();
         team.setName(teamDTO.name());
+        team.setSize(teamDTO.size());
         var t = teamService.save(team);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").build(t.getId());
         return ResponseEntity.created(uri).build();
@@ -54,6 +55,7 @@ public class TeamController {
         if (t.isPresent()) {
             var team = t.get();
             team.setName(teamDTO.name());
+            team.setSize(teamDTO.size());
             teamService.update(team);
             return ResponseEntity.noContent().build();
         }
