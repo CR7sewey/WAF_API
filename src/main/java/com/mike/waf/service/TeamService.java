@@ -1,11 +1,8 @@
 package com.mike.waf.service;
 
-import com.mike.waf.model.entities.Player;
 import com.mike.waf.model.entities.Team;
-import com.mike.waf.repository.PlayerRepository;
 import com.mike.waf.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,45 +15,42 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class PlayerService implements IService<Player> {
+public class TeamService implements IService<Team> {
 
-    private final PlayerRepository playerRepository;
     private final TeamRepository teamRepository;
 
     @Override
-    public Optional<Player> findById(UUID id) {
-        return playerRepository.findById(id);
+    public Team save(Team team) {
+        return teamRepository.save(team);
     }
 
-    @Override
-    public Player save(Player player) {
-        return playerRepository.save(player);
+    public Optional<Team> findById(UUID id) {
+        return teamRepository.findById(id);
     }
 
+
     @Override
-    public void update(Player player) {
-        if (player.getId() == null) {
-            throw new IllegalArgumentException("Player not found");
+    public void update(Team team) {
+        if (team.getId() == null) {
+            throw new IllegalArgumentException("Team not found");
         }
-        playerRepository.save(player);
+        teamRepository.save(team);
+
     }
 
     @Override
-    public void delete(Player player) {
-        removePlayerFromTeams(player);
-
-        playerRepository.delete(player);
+    public void delete(Team team) {
+        teamRepository.delete(team);
     }
 
-    //@Override
-    public Page<Player> findAllByNameAndRating(
+    public Page<Team> findAllByNameAndRating(
             String name,
             Integer rating,
             Integer pageNumber,
             Integer pageSize
 
     ) {
-        Specification<Player> sp = Specification.allOf(
+        Specification<Team> sp = Specification.allOf(
                 ((root, query, criteriaBuilder) -> criteriaBuilder.conjunction())
         ); // create specification
 
@@ -74,15 +68,6 @@ public class PlayerService implements IService<Player> {
 
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("rating").descending());
-        return playerRepository.findAll(sp, pageable);
+        return teamRepository.findAll(sp, pageable);
     }
-
-
-    private void removePlayerFromTeams(Player player) {
-        for (Team team : player.getTeams()) {
-            team.getPlayers().remove(player);
-        }
-        teamRepository.saveAll(player.getTeams());
-    }
-
 }
