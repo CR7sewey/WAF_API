@@ -6,5 +6,5 @@ The goal is to build the API for the WAF application, which is being developed f
 
 ## UML - as it stands
 
-### User + Player
-<img width="451" height="342" alt="Diagrama sem nome drawio (5)" src="https://github.com/user-attachments/assets/0f58c951-ce51-4e2f-a84c-865ed8acbac4" />
+### User + Player + Team
+<img width="490" height="504" alt="Diagrama sem nome drawio (7)" src="https://github.com/user-attachments/assets/d39b0de2-3d85-4832-ae85-fa80139a46e1" />
