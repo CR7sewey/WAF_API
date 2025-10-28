@@ -18,22 +18,40 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class MatchService {
+public class MatchService implements IService<Match> {
 
     private final MatchRepository matchRepository;
     private final TeamRepository teamRepository;
 
+    @Override
     public Match save(Match match) {
-        matchValidator(match);
+        matchValidatorTeamExists(match);
+        matchValidatorTeamAlreadyAssigned(match);
         return matchRepository.save(match);
     }
 
-    public Optional<Match> findById(UUID id) {
-        return matchRepository.findById(id);
+    @Override
+    public void update(Match match) {
+        if (match.getId() == null) {
+            throw new IllegalArgumentException("Match id must not be null");
+        }
+        matchValidatorTeamExists(match);
+        matchRepository.save(match);
     }
 
-    private void matchValidator(Match match) {
+    @Override
+    public void delete(Match match) {
+        matchRepository.delete(match);
+    }
 
+    @Override
+    public Optional<Match> findById(UUID id) {
+        var found = matchRepository.findById(id);
+        //var c = found.get();
+        return found;
+    }
+
+    private void matchValidatorTeamExists(Match match) {
         if (match.getTeam1() != null) {
             var team1 = teamRepository.findById(match.getTeam1());
             if (team1.isEmpty()) {
@@ -46,6 +64,9 @@ public class MatchService {
                 throw new NotFoundFieldsValidator("Team 2 Not Found", "team2");
             }
         }
+    }
+
+    public void matchValidatorTeamAlreadyAssigned(Match match) {
 
         Set<UUID> teamsList1 = matchRepository.findAll()
                 .stream().map(match1 -> match1.getTeam1()).collect(Collectors.toSet());
@@ -59,6 +80,21 @@ public class MatchService {
         if (teamsList1.contains(match.getTeam2())
                 || teamsList2.contains(match.getTeam2())
         ) {
+            throw new FieldsValidator("Team 2 is already assigned to a match", "team2");
+        }
+
+    }
+
+    public void matchValidatorTeamAlreadyAssinedUpdate(UUID team1, UUID team2, Integer teamNum) {
+        Set<UUID> teamsList1 = matchRepository.findAll()
+                .stream().map(match1 -> match1.getTeam1()).collect(Collectors.toSet());
+        Set<UUID> teamsList2 = matchRepository.findAll()
+                .stream().map(match1 -> match1.getTeam2()).collect(Collectors.toSet());
+        if (teamNum == 1 && (teamsList1.contains(team1) || teamsList2.contains(team1))) {
+
+            throw new FieldsValidator("Team 1 is already assigned to a match", "team1");
+        }
+        if (teamNum == 2 && (teamsList1.contains(team2) || teamsList2.contains(team2))) {
             throw new FieldsValidator("Team 2 is already assigned to a match", "team2");
         }
 

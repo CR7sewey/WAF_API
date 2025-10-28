@@ -3,6 +3,7 @@ package com.mike.waf.model.entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.beans.factory.config.YamlProcessor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "tb_match")
+@ToString(exclude = "pitch")
 @EntityListeners(AuditingEntityListener.class) // listening for some anotations (created etc)
 public class Match implements Serializable {
 
@@ -40,6 +42,10 @@ public class Match implements Serializable {
     @Column(nullable = false)
     private Boolean status;
 
+    @ManyToOne
+    @JoinColumn(name = "pitch_id", nullable = false)
+    private Pitch pitch;
+
     @CreatedDate
     @Column(name = "register_date")
     private LocalDateTime registerDate;
@@ -50,12 +56,13 @@ public class Match implements Serializable {
 
     public Match() {}
 
-    public Match(String result, Instant date, UUID team1, UUID team2, Boolean status) {
+    public Match(String result, Instant date, UUID team1, UUID team2, Boolean status, Pitch pitch) {
         this.result = result;
         this.date = date;
         this.team1 = team1;
         this.team2 = team2;
         this.status = status;
+        this.pitch = pitch;
     }
 
 }

@@ -16,7 +16,9 @@ public record MatchRegisterDTO(
         UUID team1,
         UUID team2,
         @NotNull
-        Boolean status
+        Boolean status,
+        @NotNull(message = "Pitch id cannot be null")
+        UUID pitchId
 )
 {
 }

@@ -1,5 +1,6 @@
 package com.mike.waf.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -41,6 +43,10 @@ public class Pitch implements Serializable {
 
     @Column(nullable = false, length = 16)
     private String pitchDimensions;
+
+    @JsonIgnore // problem with LazyLoading - Type definition error: [simple type, class org.hibernate.proxy.pojo.bytebuddy.ByteBuddyInterceptor]
+    @OneToMany(mappedBy = "pitch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Match> matches;
 
     @CreatedDate
     @Column(name = "register_date")
