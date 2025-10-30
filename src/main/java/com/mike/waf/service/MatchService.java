@@ -4,10 +4,15 @@ import com.mike.waf.exceptions.FieldsValidator;
 import com.mike.waf.exceptions.NotFoundFieldsValidator;
 import com.mike.waf.model.DTO.MatchRegisterDTO;
 import com.mike.waf.model.entities.Match;
+import com.mike.waf.model.entities.Pitch;
 import com.mike.waf.model.entities.Team;
 import com.mike.waf.repository.MatchRepository;
 import com.mike.waf.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +27,49 @@ public class MatchService implements IService<Match> {
 
     private final MatchRepository matchRepository;
     private final TeamRepository teamRepository;
+
+    public Page<Match> findAll(
+            String pitchName,
+            String team1,
+            String team2,
+            Integer pageNumber,
+            Integer pageSize
+    ) {
+
+        Specification<Match> specification = Specification.allOf(
+                (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.conjunction()
+        );
+
+         if (team1 != null) {
+             var uuid = UUID.fromString(team1);
+            specification = specification.and(
+                    (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.equal(root.get("team1"), uuid)
+            )
+                    .or(
+                            (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.equal(root.get("team2"), uuid)
+                    )
+            ;
+        }
+        if (team2 != null) {
+            var uuid = UUID.fromString(team1);
+            specification = specification.and(
+                    (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.equal(root.get("team2"), uuid)
+            )
+                    .or(
+                            (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.equal(root.get("team1"), uuid)
+                    )
+            ;
+        }
+       if (pitchName != null) {
+            specification = specification.and(
+                    (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.upper(root.get("pitch").get("name")), pitchName.toUpperCase())
+            );
+        }
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return matchRepository.findAll(specification, pageable);
+
+    }
 
     @Override
     public Match save(Match match) {

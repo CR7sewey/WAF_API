@@ -11,6 +11,7 @@ import com.mike.waf.service.PitchService;
 import com.mike.waf.service.TeamService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -106,6 +108,28 @@ public class MatchController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<Match>> findAll(
+            @RequestParam(required = false) String pitchName,
+            @RequestParam(required = false) String team1,
+            @RequestParam(required = false) String team2,
+            @RequestParam(required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(required = false, defaultValue = "10") Integer pageSize
+    ) {
+
+
+
+        Page<Match> match =  matchService.findAll(
+                pitchName,
+                team1,
+                team2,
+                pageNumber,
+                pageSize
+        );
+
+        return ResponseEntity.ok().body(match);
     }
 
 }
