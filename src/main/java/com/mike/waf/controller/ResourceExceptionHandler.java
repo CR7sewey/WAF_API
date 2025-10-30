@@ -1,6 +1,8 @@
 package com.mike.waf.controller;
 
 import com.mike.waf.exceptions.DuplicateRegister;
+import com.mike.waf.exceptions.FieldsValidator;
+import com.mike.waf.exceptions.NotFoundFieldsValidator;
 import com.mike.waf.model.DTO.ResponseErrorDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
@@ -45,6 +47,31 @@ public class ResourceExceptionHandler {
                 List.of()
         );
         return ResponseEntity.status(errorDTO.status()).body(errorDTO);
+    }
+
+    @ExceptionHandler(NotFoundFieldsValidator.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<Object> handleNotFound(NotFoundFieldsValidator e, HttpServletRequest request){
+        List<Map<String,String>> err = new ArrayList<>();
+        err.add(Map.of(e.getField(), e.getMessage()));
+        ResponseErrorDTO errorDTO = new ResponseErrorDTO(
+                HttpStatus.NOT_FOUND.value(),
+                "Parameters invalid",
+                err
+        );
+        return ResponseEntity.status(errorDTO.status()).body(errorDTO);
+    }
+
+    @ExceptionHandler(FieldsValidator.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ResponseEntity<Object> handleFieldsValidator(FieldsValidator e, HttpServletRequest request){
+        List<Map<String,String>> err = new ArrayList<>();
+        err.add(Map.of(e.getField(), e.getMessage()));
+        ResponseErrorDTO responseErrorDTO = new ResponseErrorDTO(
+                HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                "Parameters invalid",
+                err
+        );        return ResponseEntity.status(responseErrorDTO.status()).body(responseErrorDTO);
     }
 
     @ExceptionHandler(RuntimeException.class)
