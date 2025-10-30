@@ -45,7 +45,7 @@ public class Pitch implements Serializable {
     private String pitchDimensions;
 
     @JsonIgnore // problem with LazyLoading - Type definition error: [simple type, class org.hibernate.proxy.pojo.bytebuddy.ByteBuddyInterceptor]
-    @OneToMany(mappedBy = "pitch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pitch", fetch = FetchType.LAZY, cascade = CascadeType.ALL) // remove cascade if not to delete match
     private List<Match> matches;
 
     @CreatedDate

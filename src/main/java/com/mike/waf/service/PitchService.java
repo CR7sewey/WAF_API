@@ -1,6 +1,10 @@
 package com.mike.waf.service;
 
+import com.mike.waf.model.entities.Match;
 import com.mike.waf.model.entities.Pitch;
+import com.mike.waf.model.entities.Player;
+import com.mike.waf.model.entities.Team;
+import com.mike.waf.repository.MatchRepository;
 import com.mike.waf.repository.PitchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +21,7 @@ import java.util.UUID;
 public class PitchService implements IService<Pitch> {
 
     private final PitchRepository pitchRepository;
+    //private final MatchRepository matchRepository;
 
 
     @Override
@@ -41,6 +46,7 @@ public class PitchService implements IService<Pitch> {
 
     @Override
     public void delete(Pitch pitch) {
+        //removePitchFromMatch(pitch);
         pitchRepository.delete(pitch);
     }
 
@@ -77,5 +83,12 @@ public class PitchService implements IService<Pitch> {
 
 
     }
+/*
+    private void removePitchFromMatch(Pitch pitch) {
+        for (Match match : pitch.getMatches()) {
+            match.setPitch(null);
+        }
+        matchRepository.saveAll(pitch.getMatches());
+    }*/
 
 }
