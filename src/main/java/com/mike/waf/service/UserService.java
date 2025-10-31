@@ -30,11 +30,26 @@ public class UserService implements IService<User> {
 
     @Override
     public void update(User user) {
-
+        if (user.getId() == null) {
+            throw new IllegalArgumentException("User must have an id");
+        }
+        userRepository.save(user);
     }
 
     @Override
     public void delete(User user) {
-
+        if (user.getId() == null) {
+            throw new IllegalArgumentException("User must have an id");
+        }
+        userRepository.delete(user);
     }
+
+    public void deleteByUsername(String username) {
+        userRepository.deleteByUsername(username);
+    }
+
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
 }
