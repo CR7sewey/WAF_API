@@ -2,6 +2,7 @@ package com.mike.waf.model.DTO;
 
 import jakarta.validation.constraints.*;
 
+import java.util.List;
 import java.util.UUID;
 
 public record UserDTO(
@@ -18,7 +19,8 @@ public record UserDTO(
         String email,
         String phone,
         @Size(max = 1024)
-        String location
+        String location,
+        List<String> roles
 
 ) {
 }

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,7 +15,7 @@ import java.util.UUID;
 public class UserService implements IService<User> {
 
     private final UserRepository userRepository;
-    //private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Optional<User> findById(UUID id) {
@@ -24,8 +25,12 @@ public class UserService implements IService<User> {
     @Override
     public User save(User user) {
         var password = user.getPassword();
-       // user.setPassword(passwordEncoder.encode(password));
+        user.setPassword(passwordEncoder.encode(password));
         return userRepository.save(user);
+    }
+
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 
     @Override

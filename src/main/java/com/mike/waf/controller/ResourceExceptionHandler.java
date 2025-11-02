@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -91,6 +92,18 @@ public class ResourceExceptionHandler {
         System.out.println("AQUUUUUUUUUUUUUUUUUUUUUi");
         ResponseErrorDTO errorDTO = new ResponseErrorDTO(
                 HttpStatus.CONFLICT.value(),
+                e.getMessage(),
+                List.of()
+        );
+        return ResponseEntity.status(errorDTO.status()).body(errorDTO);
+    }
+
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<Object> handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException e, HttpServletRequest request){
+
+        ResponseErrorDTO errorDTO = new ResponseErrorDTO(
+                HttpStatus.UNAUTHORIZED.value(),
                 e.getMessage(),
                 List.of()
         );

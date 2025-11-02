@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -22,7 +24,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/{id}")
+/*    @GetMapping("/{id}")
     public ResponseEntity<UserInfoDTO> findById(@PathVariable String id) {
         var uuid = UUID.fromString(id);
 
@@ -35,7 +37,7 @@ public class UserController {
                 )
         )).orElse(ResponseEntity.notFound().build());
 
-    }
+    }*/
 
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody @Valid UserDTO userDTO) {
@@ -46,6 +48,7 @@ public class UserController {
         user.setEmail(userDTO.email());
         user.setPhone(userDTO.phone());
         user.setLocation(userDTO.location());
+        user.setRoles(userDTO.roles());
         var u = userService.save(user);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").build(u.getId());
         return ResponseEntity.created(uri).build();
@@ -59,7 +62,8 @@ public class UserController {
                         user.getUsername(),
                         user.getEmail(),
                         user.getPhone(),
-                        user.getLocation()
+                        user.getLocation(),
+                        user.getRoles()
                 )
         )).orElse(ResponseEntity.notFound().build());
     }
@@ -78,7 +82,23 @@ public class UserController {
         user.setEmail(userDTO.email());
         user.setPhone(userDTO.phone());
         user.setLocation(userDTO.location());
+        user.setRoles(userDTO.roles());
         userService.update(user);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping
+    public ResponseEntity<List<UserInfoDTO>> findAllUsers() {
+        List<User> list = userService.findAll();
+        List<UserInfoDTO> userInfo = list.stream().map(user -> new UserInfoDTO(
+                user.getUsername(),
+                user.getEmail(),
+                user.getPhone(),
+                user.getLocation(),
+                user.getRoles()
+        )).toList();
+        return ResponseEntity.ok().body(userInfo);
+
+    }
+
 }
