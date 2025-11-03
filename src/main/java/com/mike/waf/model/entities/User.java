@@ -1,5 +1,6 @@
 package com.mike.waf.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -39,6 +40,10 @@ public class User implements Serializable {
     @Column(length = 1024)
     private String location;
 
+    @JsonIgnore
+    @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)//, orphanRemoval = true) //if the player reference is removed from the User, JPA deletes the player.
+    private Player player;
+
     @Type(ListArrayType.class) // traduction from list to array
     @Column(name = "roles", columnDefinition = "varchar[]")
     private List<String> roles;
@@ -59,6 +64,13 @@ public class User implements Serializable {
         this.email = email;
         this.phone = phone;
         this.location = location;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+        if (player != null) {
+            player.setUser(this);
+        }
     }
 
 }

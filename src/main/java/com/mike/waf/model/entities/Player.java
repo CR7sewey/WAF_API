@@ -59,6 +59,10 @@ public class Player implements Serializable {
     @Column(nullable = true)
     private BigInteger rating;
 
+    @OneToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
     @Type(ListArrayType.class) // traduction from list to array
     @Column(name = "skill", columnDefinition = "varchar[]")
     private List<String> skill;
