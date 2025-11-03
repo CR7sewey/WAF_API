@@ -101,4 +101,12 @@ public class UserController {
 
     }
 
+    @DeleteMapping("/{username}")
+    public ResponseEntity<Object> deleteUser(@PathVariable String username) {
+        return userService.findByUsername(username).map(p -> {
+            userService.deleteByUsername(p.getUsername());
+            return ResponseEntity.ok().build();
+        }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
 }

@@ -4,6 +4,7 @@ import com.mike.waf.model.entities.Player;
 import com.mike.waf.model.entities.Team;
 import com.mike.waf.repository.PlayerRepository;
 import com.mike.waf.repository.TeamRepository;
+import com.mike.waf.security.CustomAuthentication;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.mike.waf.model.entities.User;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -22,14 +26,19 @@ public class PlayerService implements IService<Player> {
 
     private final PlayerRepository playerRepository;
     private final TeamRepository teamRepository;
+    private final UserService userService;
 
     @Override
     public Optional<Player> findById(UUID id) {
-        return playerRepository.findById(id);
+        var p = playerRepository.findById(id);
+
+        return p;
     }
 
     @Override
     public Player save(Player player) {
+        var user = getCurrentUser();
+        player.setUser(user);
         return playerRepository.save(player);
     }
 
@@ -44,7 +53,7 @@ public class PlayerService implements IService<Player> {
     @Override
     public void delete(Player player) {
         removePlayerFromTeams(player);
-
+        removePlayerFromUser();
         playerRepository.delete(player);
     }
 
@@ -83,6 +92,25 @@ public class PlayerService implements IService<Player> {
             team.getPlayers().remove(player);
         }
         teamRepository.saveAll(player.getTeams());
+    }
+
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof CustomAuthentication customAuthentication) {
+            var user = customAuthentication.getUser();
+            return userService
+                    .findByUsername(user.getUsername())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found..."));
+        }
+        throw new IllegalArgumentException("Current user is not found");
+    }
+
+    private void removePlayerFromUser() {
+        var user = getCurrentUser();
+        if (user != null) {
+            user.setPlayer(null);
+            //userService.save(user);
+        }
     }
 
 }

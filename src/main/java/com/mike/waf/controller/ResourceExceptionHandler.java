@@ -1,5 +1,6 @@
 package com.mike.waf.controller;
 
+import com.mike.waf.exceptions.AuthorizationValidator;
 import com.mike.waf.exceptions.DuplicateRegister;
 import com.mike.waf.exceptions.FieldsValidator;
 import com.mike.waf.exceptions.NotFoundFieldsValidator;
@@ -101,6 +102,18 @@ public class ResourceExceptionHandler {
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<Object> handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException e, HttpServletRequest request){
+
+        ResponseErrorDTO errorDTO = new ResponseErrorDTO(
+                HttpStatus.UNAUTHORIZED.value(),
+                e.getMessage(),
+                List.of()
+        );
+        return ResponseEntity.status(errorDTO.status()).body(errorDTO);
+    }
+
+    @ExceptionHandler(AuthorizationValidator.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<Object> handleAuthorizationValidator(AuthorizationValidator e, HttpServletRequest request){
 
         ResponseErrorDTO errorDTO = new ResponseErrorDTO(
                 HttpStatus.UNAUTHORIZED.value(),

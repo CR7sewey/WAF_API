@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -26,6 +27,7 @@ public class PlayerController {
 
     private final PlayerService playerService;
 
+    @PreAuthorize("hasAnyRole('USER','User','Admin','ADMIN')")
     @PostMapping // 201 or 422
     public ResponseEntity<Object> save(@RequestBody @Valid PlayerRegisterDTO playerRegisterDTO) {
 
@@ -42,6 +44,7 @@ public class PlayerController {
 
     }
 
+    //@PreAuthorize("hasAnyRole('USER','User','Admin','ADMIN')")
     @GetMapping(value = "/{id}") // 200 or 404
     public ResponseEntity<Player> findById(@PathVariable String id) {
 
@@ -52,6 +55,7 @@ public class PlayerController {
 
     }
 
+    @PreAuthorize("hasAnyRole('USER','User','Admin','ADMIN')")
     @GetMapping
     public ResponseEntity<Page<Player>> findAllByNameAndRating(
             @RequestParam(required = false) String name, @RequestParam(required = false) Integer rating,
@@ -62,6 +66,7 @@ public class PlayerController {
         return ResponseEntity.ok().body(players);
     }
 
+    @PreAuthorize("hasAnyRole('USER','User','Admin','ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable String id, @RequestBody @Valid PlayerRegisterDTO playerRegisterDTO) {
 
@@ -83,6 +88,7 @@ public class PlayerController {
 
     }
 
+    @PreAuthorize("hasAnyRole('USER','User','Admin','ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteById(@PathVariable String id) {
 
@@ -95,6 +101,7 @@ public class PlayerController {
 
     //
 
+    @PreAuthorize("hasAnyRole('USER','User','Admin','ADMIN')")
     @PutMapping("/{id}/statistics")
     public ResponseEntity<Object> updateStatistics(@PathVariable String id, @RequestBody @Valid PlayerStatisticsDTO playerStatisticsDTO) {
 
