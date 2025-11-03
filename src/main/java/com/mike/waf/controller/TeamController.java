@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -30,6 +31,7 @@ public class TeamController {
     private final TeamService teamService;
     private final PlayerService playerService;
 
+    @PreAuthorize("hasAnyRole('Admin','ADMIN')")
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody @Valid TeamDTO teamDTO) {
         var team = new Team();
@@ -47,6 +49,7 @@ public class TeamController {
         return teamService.findById(uuid).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasAnyRole('Admin','ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable String id, @RequestBody @Valid TeamDTO teamDTO) {
 
@@ -64,6 +67,7 @@ public class TeamController {
 
     }
 
+    @PreAuthorize("hasAnyRole('Admin','ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteById(@PathVariable String id) {
 

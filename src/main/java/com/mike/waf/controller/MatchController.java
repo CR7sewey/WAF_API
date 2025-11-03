@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -30,7 +31,7 @@ public class MatchController {
 
     private final MatchService matchService;
     private final PitchService pitchService;
-
+    @PreAuthorize("hasAnyRole('Admin','ADMIN')")
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody @Valid MatchRegisterDTO matchRegisterDTO) {
 
@@ -67,7 +68,7 @@ public class MatchController {
         return ResponseEntity.notFound().build();
 
     }
-
+    @PreAuthorize("hasAnyRole('Admin','ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable String id, @RequestBody @Valid MatchRegisterDTO matchRegisterDTO) {
         UUID uuid = UUID.fromString(id);
@@ -98,7 +99,7 @@ public class MatchController {
         }
         return ResponseEntity.notFound().build();
     }
-
+    @PreAuthorize("hasAnyRole('Admin','ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable String id) {
         UUID uuid = UUID.fromString(id);
